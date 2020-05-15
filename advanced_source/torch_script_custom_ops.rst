@@ -37,27 +37,8 @@ TorchScript as a custom operator. The first step is to write the implementation
 of our custom operator in C++. Let's call the file for this implementation
 ``op.cpp`` and make it look like this:
 
-.. code-block:: cpp
-
-  #include <opencv2/opencv.hpp>
-  #include <torch/script.h>
-
-  torch::Tensor warp_perspective(torch::Tensor image, torch::Tensor warp) {
-    cv::Mat image_mat(/*rows=*/image.size(0),
-                      /*cols=*/image.size(1),
-                      /*type=*/CV_32FC1,
-                      /*data=*/image.data<float>());
-    cv::Mat warp_mat(/*rows=*/warp.size(0),
-                     /*cols=*/warp.size(1),
-                     /*type=*/CV_32FC1,
-                     /*data=*/warp.data<float>());
-
-    cv::Mat output_mat;
-    cv::warpPerspective(image_mat, output_mat, warp_mat, /*dsize=*/{8, 8});
-
-    torch::Tensor output = torch::from_blob(output_mat.ptr<float>(), /*sizes=*/{8, 8});
-    return output.clone();
-  }
+.. literalinclude:: torch_script_custom_ops/warp_perspective.cpp
+  :language: cpp
 
 The code for this operator is quite short. At the top of the file, we include
 the OpenCV header file, ``opencv2/opencv.hpp``, alongside the ``torch/script.h``
